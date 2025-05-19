@@ -3,15 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import styled from "styled-components";
 import Layout from "../_components/layout";
+import { Post } from "@/lib/generated/prisma";
+import useSWR from "swr";
+import { formatDate } from "@/lib/utils";
 
-const popularPostList = [
-  { id: 1, date: "25.05.16", title: "뭐해야하냐" },
-  { id: 2, date: "25.05.16", title: "이거 미쳤다" },
-  { id: 3, date: "25.05.16", title: "본인 돈버는 상상함" },
-  { id: 4, date: "25.05.16", title: "아직도 빨강 파랑 둘..." },
-];
+interface PostResponse {
+  ok: boolean;
+  postList: Post[];
+}
 
 export default function Home() {
+  const { data, error, isLoading } = useSWR<PostResponse>("/api/post");
   return (
     <Layout>
       <LeftPanel>
@@ -30,14 +32,15 @@ export default function Home() {
             <span>Popular</span>
           </PopularHeading>
           <List>
-            {popularPostList.map(({ id, date, title }) => (
-              <SLink href={`/post/${id}`} key={id}>
-                <ListRow>
-                  <span>{title}</span>
-                  <span>{date}</span>
-                </ListRow>
-              </SLink>
-            ))}
+            {!isLoading &&
+              data?.postList.map(({ id, title, createAt }) => (
+                <SLink href={`/post/${id}`} key={id}>
+                  <ListRow>
+                    <span>{title}</span>
+                    <span>{formatDate(createAt)}</span>
+                  </ListRow>
+                </SLink>
+              ))}
           </List>
         </PopularArea>
       </LeftPanel>
