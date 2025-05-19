@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps) {
           <SLink href="/">MaskBook</SLink>
         </Logo>
         <SignIn>
-          <SLink href="/sign-in">Sign In</SLink>
+          <SLink href="/sign-up">Sign In</SLink>
         </SignIn>
       </TopBar>
       <Main>{children}</Main>
