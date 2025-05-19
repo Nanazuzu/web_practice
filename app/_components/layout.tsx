@@ -2,6 +2,7 @@
 
 import styled from "styled-components";
 import React from "react";
+import Link from "next/link";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,8 +12,12 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <TopBar>
-        <Logo>MaskBook</Logo>
-        <SignIn>Sign In</SignIn>
+        <Logo>
+          <SLink href="/">MaskBook</SLink>
+        </Logo>
+        <SignIn>
+          <SLink href="/sign-in">Sign In</SLink>
+        </SignIn>
       </TopBar>
       <Main>{children}</Main>
     </>
@@ -68,4 +73,9 @@ const Main = styled.div`
   margin-top: 130px;
   padding: 0 1rem;
   max-width: 1200px;
+`;
+
+const SLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
 `;

@@ -6,6 +6,7 @@ import Layout from "../_components/layout";
 import { Post } from "@/lib/generated/prisma";
 import useSWR from "swr";
 import { formatDate } from "@/lib/utils";
+import { Spinner } from "../_components/loading-spinner";
 
 interface PostResponse {
   ok: boolean;
@@ -32,7 +33,11 @@ export default function Home() {
             <span>Popular</span>
           </PopularHeading>
           <List>
-            {!isLoading &&
+            {isLoading ? (
+              <SpinnerWrapper>
+                <Spinner />
+              </SpinnerWrapper>
+            ) : (
               data?.postList.map(({ id, title, createAt }) => (
                 <SLink href={`/post/${id}`} key={id}>
                   <ListRow>
@@ -40,7 +45,8 @@ export default function Home() {
                     <span>{formatDate(createAt)}</span>
                   </ListRow>
                 </SLink>
-              ))}
+              ))
+            )}
           </List>
         </PopularArea>
       </LeftPanel>
@@ -108,4 +114,8 @@ const RightPanel = styled.div`
   position: relative;
   cursor: pointer;
   width: 30rem;
+`;
+
+const SpinnerWrapper = styled.div`
+  margin: 3rem;
 `;

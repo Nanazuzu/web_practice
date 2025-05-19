@@ -1,43 +1,54 @@
 "use client";
 
 import Layout from "@/app/_components/layout";
+import { Post } from "@/lib/generated/prisma";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import styled from "styled-components";
+import useSWR from "swr";
+import { formatDate } from "@/lib/utils";
+import { Spinner } from "@/app/_components/loading-spinner";
 
-const postInfo = {
-  title: "오늘 점심 뭐 먹지..",
-  date: "25.04.28",
-  content: "오늘 아침부터 아무것도 안 먹음… 띠용",
-  liked: 15,
-};
+interface PostResponse {
+  ok: boolean;
+  post: Post | undefined;
+}
 
 export default function PostDetail() {
+  const params = useParams();
+  const id = Number(params.id);
+  const { data, error, isLoading } = useSWR<PostResponse>(`/api/post/${id}`);
   return (
     <Layout>
+      {isLoading ? (
+        <SpinnerWrapper>
+          <Spinner />
+        </SpinnerWrapper>
+      ) : (
+        <Article>
+          <CategoryRow>
+            <Icon>💬</Icon>
+            <span>익명토크</span>
+          </CategoryRow>
+          <Title>{data?.post?.title}</Title>
+
+          <MetaRow>
+            <DateSpan>{formatDate(data?.post?.updateAt)}</DateSpan>
+            <LikeImage src="/heart.png" alt="" width={12} height={12} />
+            <LikeSpan>{data?.post?.likedCount}</LikeSpan>
+          </MetaRow>
+
+          <Divider />
+          <ContentSpan>
+            <Content>{data?.post?.content}</Content>
+
+            <SaveButton>저장</SaveButton>
+          </ContentSpan>
+
+          <Divider />
+        </Article>
+      )}
       {/* ───── 좌측(본문) ───── */}
-      <Article>
-        <CategoryRow>
-          <Icon>💬</Icon>
-          <span>익명토크</span>
-        </CategoryRow>
-
-        <Title>{postInfo.title}</Title>
-
-        <MetaRow>
-          <DateSpan>{postInfo.date}</DateSpan>
-          <LikeImage src="/heart.png" alt="" width={12} height={12} />
-          <LikeSpan>{postInfo.liked}</LikeSpan>
-        </MetaRow>
-
-        <Divider />
-        <ContentSpan>
-          <Content>{postInfo.content}</Content>
-
-          <SaveButton>저장</SaveButton>
-        </ContentSpan>
-
-        <Divider />
-      </Article>
     </Layout>
   );
 }
@@ -124,4 +135,8 @@ const SaveButton = styled.button`
   &:hover {
     background: rgba(48, 69, 223, 0.6);
   }
+`;
+
+const SpinnerWrapper = styled.div`
+  margin-top: 3rem;
 `;
